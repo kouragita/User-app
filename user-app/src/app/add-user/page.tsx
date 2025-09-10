@@ -27,14 +27,41 @@ export default function AddUser() {
     setError(null);
     
     try {
-      // In a real app, we would send this to an API
-      // For this demo, we'll just simulate a successful request
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Validate required fields
+      if (!formData.name || !formData.email) {
+        throw new Error('Name and email are required');
+      }
+      
+      // Create a new user object with the expected structure
+      const newUser = {
+        id: Date.now(), // Temporary ID - in a real app, this would come from the server
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || '',
+        website: formData.website || '',
+        company: {
+          name: formData.company || '',
+          catchPhrase: '',
+          bs: ''
+        }
+      };
+      
+      // Store the new user in localStorage so the home page can pick it up
+      const existingNewUsers = localStorage.getItem('newUsers');
+      let newUsers = existingNewUsers ? JSON.parse(existingNewUsers) : [];
+      
+      // Make sure newUsers is an array
+      if (!Array.isArray(newUsers)) {
+        newUsers = [];
+      }
+      
+      newUsers.unshift(newUser); // Add to the beginning of the array
+      localStorage.setItem('newUsers', JSON.stringify(newUsers));
       
       // Redirect to home page after successful submission
       router.push('/');
     } catch (err) {
-      setError('Failed to add user. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to add user. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -45,16 +72,16 @@ export default function AddUser() {
     <div className="container mx-auto px-4 py-8 max-w-md">
       <button 
         onClick={() => router.back()}
-        className="mb-6 text-blue-500 hover:text-blue-700 flex items-center"
+        className="mb-6 text-blue-600 hover:text-blue-800 flex items-center font-medium"
       >
         ← Back to Users
       </button>
       
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold mb-6 text-center">Add New User</h1>
+      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Add New User</h1>
         
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200">
             {error}
           </div>
         )}
@@ -62,7 +89,7 @@ export default function AddUser() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Name
+              Name *
             </label>
             <input
               type="text"
@@ -71,13 +98,14 @@ export default function AddUser() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter full name"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
             />
           </div>
           
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              Email *
             </label>
             <input
               type="email"
@@ -86,7 +114,8 @@ export default function AddUser() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="user@example.com"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
             />
           </div>
           
@@ -100,7 +129,8 @@ export default function AddUser() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="(123) 456-7890"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
             />
           </div>
           
@@ -114,7 +144,8 @@ export default function AddUser() {
               name="website"
               value={formData.website}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="https://example.com"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
             />
           </div>
           
@@ -128,7 +159,8 @@ export default function AddUser() {
               name="company"
               value={formData.company}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Company name"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
             />
           </div>
           

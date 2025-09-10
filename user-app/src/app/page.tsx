@@ -23,7 +23,35 @@ export default function Home() {
       try {
         setLoading(true);
         const userData = await fetchUsers();
-        setUsers(userData);
+        
+        // Check for any newly added users in localStorage
+        if (typeof window !== 'undefined') {
+          const newUsers = localStorage.getItem('newUsers');
+          if (newUsers) {
+            try {
+              const parsedNewUsers = JSON.parse(newUsers);
+              // Make sure parsedNewUsers is an array
+              if (Array.isArray(parsedNewUsers)) {
+                // Merge new users with existing users
+                const uniqueNewUsers = parsedNewUsers.filter(
+                  (newUser: User) => !userData.some(user => user.id === newUser.id)
+                );
+                setUsers([...uniqueNewUsers, ...userData]);
+              } else {
+                setUsers(userData);
+              }
+              // Clear the new users from localStorage after loading them
+              localStorage.removeItem('newUsers');
+            } catch (e) {
+              console.error('Error parsing new users from localStorage', e);
+              setUsers(userData);
+            }
+          } else {
+            setUsers(userData);
+          }
+        } else {
+          setUsers(userData);
+        }
         setFilteredUsers(userData);
       } catch (err) {
         setError('Failed to fetch users. Please try again later.');
