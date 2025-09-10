@@ -76,7 +76,7 @@ export default function UserDetail({ params }: { params: { id: string } }) {
         ← Back to Users
       </button>
       
-      <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+      <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto text-gray-900">
         <h1 className="text-3xl font-bold mb-6 text-center">{user.name}</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
